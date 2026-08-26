@@ -9,21 +9,43 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
-  id-token: write
+permissions: {}
+
+concurrency:
+  group: publish-pypi
+  cancel-in-progress: false
 
 jobs:
   publish:
     environment: pypi
     runs-on: ubuntu-latest
+    permissions:
+      attestations: read
+      contents: read
+      id-token: write
     steps:
       - name: Download verified GitHub release distributions
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
-          mkdir dist
+          mkdir release dist
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
-            --pattern '*.whl' --pattern '*.tar.gz' --dir dist
+            --dir release
+      - name: Verify release checksums and provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          cd release
+          sha256sum --check SHA256SUMS
+          gh attestation verify *.whl --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --source-ref "refs/tags/$RELEASE_TAG" --deny-self-hosted-runners
+          gh attestation verify *.tar.gz --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --source-ref "refs/tags/$RELEASE_TAG" --deny-self-hosted-runners
+          cp *.whl *.tar.gz ../dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
