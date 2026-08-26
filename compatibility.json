@@ -1,0 +1,30 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "formatVersion": "meridian.synthetic.compatibility.v1",
+  "package": "meridian-plugin-synthetic",
+  "version": "1.0.0",
+  "python": ">=3.12,<3.15",
+  "contracts": {
+    "core": "1.0.0",
+    "semantics": "1.0.0",
+    "query": "1.0.0",
+    "evidence": "1.0.0",
+    "streaming": "1.0.0",
+    "plugin": "1.0.0"
+  },
+  "design": {
+    "hldRevision": 56,
+    "catalogsRevision": 70,
+    "adaptersRevision": 24,
+    "streamingRevision": 6,
+    "constructsRevision": 45,
+    "syntheticLldRevision": 15
+  },
+  "catalogsOwned": [],
+  "catalogsUsed": ["structured", "evidence", "streaming"],
+  "forbiddenDependencies": [
+    "storage-engine SDKs",
+    "Kafka clients",
+    "private Meridian Adapter APIs"
+  ]
+}

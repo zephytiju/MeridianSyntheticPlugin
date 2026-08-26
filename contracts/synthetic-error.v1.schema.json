@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.invalid/contracts/synthetic-error.v1.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "Meridian Synthetic Error V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["code", "message", "fieldPath", "checkpoint", "details", "retryable"],
+  "properties": {
+    "code": {"type": "string", "pattern": "^MERIDIAN_SYNTHETIC_[A-Z_]+$"},
+    "message": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "fieldPath": {"type": ["string", "null"]},
+    "checkpoint": {"type": "array", "items": {"type": "string"}},
+    "details": {"type": "object", "maxProperties": 32, "additionalProperties": {"type": "string", "maxLength": 512}},
+    "retryable": {"type": "boolean"}
+  }
+}

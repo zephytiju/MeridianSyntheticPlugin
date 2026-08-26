@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.invalid/contracts/dataset-manifest.v1.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "Meridian Synthetic Dataset Manifest V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "runId", "spec", "implementation", "schemas", "partitions", "validationDigest", "sources", "artifactDigest"],
+  "properties": {
+    "formatVersion": {"const": "meridian.synthetic.dataset-manifest.v1"},
+    "runId": {"type": "string", "minLength": 1},
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "fingerprint"],
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"type": "string"},
+        "fingerprint": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coordinate", "digest"],
+      "properties": {
+        "coordinate": {"type": "string"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "schemas": {"type": "object", "additionalProperties": {"$ref": "#/$defs/digest"}},
+    "partitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["collectionId", "partitionId", "recordCount", "byteCount", "digest", "skipped", "provenance"],
+        "properties": {
+          "collectionId": {"type": "string"},
+          "partitionId": {"type": "string"},
+          "recordCount": {"type": "integer", "minimum": 1},
+          "byteCount": {"type": "integer", "minimum": 1},
+          "digest": {"$ref": "#/$defs/digest"},
+          "skipped": {"type": "boolean"},
+          "provenance": {"type": "object", "additionalProperties": {"type": "string"}}
+        }
+      }
+    },
+    "validationDigest": {"$ref": "#/$defs/digest"},
+    "sources": {"type": "array", "items": {"type": "object"}},
+    "artifactDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

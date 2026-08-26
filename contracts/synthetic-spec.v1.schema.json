@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meridian.invalid/contracts/synthetic-spec.v1.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "Meridian SyntheticSpec V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "id",
+    "version",
+    "seed",
+    "locales",
+    "timeBounds",
+    "bounds",
+    "implementation",
+    "outputMode",
+    "collections"
+  ],
+  "properties": {
+    "formatVersion": {"const": "meridian.synthetic.spec.v1"},
+    "id": {"$ref": "#/$defs/token"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+"},
+    "seed": {"oneOf": [{"type": "integer"}, {"$ref": "#/$defs/token"}]},
+    "locales": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z]{2,8}(-[A-Za-z0-9]{2,8})*$"}
+    },
+    "timeBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"}
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxRecords", "maxBytes", "timeoutMs", "maxMemoryBytes", "batchSize"],
+      "properties": {
+        "maxRecords": {"type": "integer", "minimum": 1, "maximum": 100000000},
+        "maxBytes": {"type": "integer", "minimum": 1},
+        "timeoutMs": {"type": "integer", "minimum": 1},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1},
+        "batchSize": {"type": "integer", "minimum": 1, "maximum": 10000}
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coordinate"],
+      "properties": {
+        "coordinate": {"$ref": "#/$defs/token"},
+        "requiredDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "outputMode": {"enum": ["records", "dataset", "streaming"]},
+    "collections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/collection"}
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {"$ref": "#/$defs/collection"},
+          {
+            "type": "object",
+            "required": ["sourceCollection", "targetCollection", "sourceField", "targetField"],
+            "properties": {
+              "sourceCollection": {"$ref": "#/$defs/token"},
+              "targetCollection": {"$ref": "#/$defs/token"},
+              "sourceField": {"$ref": "#/$defs/token"},
+              "targetField": {"$ref": "#/$defs/token"}
+            }
+          }
+        ]
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "resource", "query", "projection", "transformation", "transformationDigest", "maxRows"],
+        "properties": {
+          "id": {"$ref": "#/$defs/token"},
+          "resource": {"$ref": "#/$defs/resource"},
+          "query": {"type": "object"},
+          "projection": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "transformation": {"$ref": "#/$defs/token"},
+          "transformationDigest": {"$ref": "#/$defs/digest"},
+          "maxRows": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind"],
+        "properties": {
+          "id": {"$ref": "#/$defs/token"},
+          "kind": {"enum": ["count", "unique", "null-rate", "range", "allowed-values"]},
+          "fieldPath": {"type": "string", "minLength": 1},
+          "parameters": {"type": "object"},
+          "blocking": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+\\-]{0,511}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalog", "namespace", "name"],
+      "properties": {
+        "catalog": {"const": "structured"},
+        "namespace": {"type": "string"},
+        "name": {"type": "string"}
+      }
+    },
+    "fieldGenerator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator"],
+      "properties": {
+        "generator": {"$ref": "#/$defs/token"},
+        "config": {"type": "object"},
+        "nullRate": {"type": "number", "minimum": 0, "maximum": 1},
+        "expectedDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "correlation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "kind", "inputs"],
+      "properties": {
+        "field": {"type": "string"},
+        "kind": {"enum": ["copy", "linear", "template"]},
+        "inputs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "parameters": {"type": "object"}
+      }
+    },
+    "schemaPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "definition"],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string"},
+        "definition": {"type": "object"},
+        "fingerprint": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "collection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "resource", "schema", "count"],
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "resource": {"$ref": "#/$defs/resource"},
+        "schema": {"$ref": "#/$defs/schemaPin"},
+        "count": {"type": "integer", "minimum": 1},
+        "fields": {"type": "object", "additionalProperties": {"$ref": "#/$defs/fieldGenerator"}},
+        "dependsOn": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/token"}},
+        "correlations": {"type": "array", "items": {"$ref": "#/$defs/correlation"}},
+        "source": {"$ref": "#/$defs/token"},
+        "sourceCollection": {"$ref": "#/$defs/token"},
+        "targetCollection": {"$ref": "#/$defs/token"},
+        "sourceField": {"$ref": "#/$defs/token"},
+        "targetField": {"$ref": "#/$defs/token"}
+      }
+    }
+  }
+}
