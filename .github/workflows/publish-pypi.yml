@@ -40,10 +40,10 @@ jobs:
           cd release
           sha256sum --check SHA256SUMS
           gh attestation verify *.whl --repo "$GITHUB_REPOSITORY" \
-            --signer-workflow "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
             --source-ref "refs/tags/$RELEASE_TAG" --deny-self-hosted-runners
           gh attestation verify *.tar.gz --repo "$GITHUB_REPOSITORY" \
-            --signer-workflow "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
             --source-ref "refs/tags/$RELEASE_TAG" --deny-self-hosted-runners
           cp *.whl *.tar.gz ../dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
