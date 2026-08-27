@@ -48,9 +48,9 @@ test = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/zephytiju/meridian-plugin-synthetic#readme"
-Issues = "https://github.com/zephytiju/meridian-plugin-synthetic/issues"
-Repository = "https://github.com/zephytiju/meridian-plugin-synthetic"
+Documentation = "https://github.com/zephytiju/MeridianSyntheticPlugin#readme"
+Issues = "https://github.com/zephytiju/MeridianSyntheticPlugin/issues"
+Repository = "https://github.com/zephytiju/MeridianSyntheticPlugin"
 
 [project.entry-points."meridian_storage.plugins"]
 synthetic = "meridian_storage.plugins.synthetic.plugin:SyntheticPluginFactory"

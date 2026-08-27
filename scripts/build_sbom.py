@@ -43,7 +43,7 @@ def main() -> None:
         "dataLicense": "CC0-1.0",
         "name": f"{name}-{version}",
         "documentNamespace": (
-            f"https://github.com/zephytiju/meridian-plugin-synthetic/"
+            f"https://github.com/zephytiju/MeridianSyntheticPlugin/"
             f"releases/{version}/{digest(arguments.wheel)}"
         ),
         "creationInfo": {
