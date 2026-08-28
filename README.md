@@ -2,7 +2,7 @@
 
 # Meridian Synthetic Plugin
 
-`meridian-plugin-synthetic` is the in-process, deterministic synthetic-data
+`meridian-storage-plugin-synthetic` is the in-process, deterministic synthetic-data
 generation plugin for Meridian V1. It generates schema-valid Records,
 relation-aware fixtures, canonical datasets, and provider-neutral Events. Every
 write goes through released Meridian public contracts.
@@ -16,7 +16,7 @@ The plugin requires the released Meridian V1 Core, Semantics, Query, Evidence,
 and Streaming distributions. After those artifacts are available:
 
 ```console
-python -m pip install meridian-plugin-synthetic
+python -m pip install meridian-storage-plugin-synthetic
 ```
 
 ## Use
@@ -55,6 +55,12 @@ Source-backed generation accepts only an explicit, projected
 `structured.query` Expression and a digest-pinned deterministic transform. Run
 evidence includes source boundaries, query fingerprints, transform digests, and
 row counts, but never source values.
+
+Meridian Core discovers the package through the `synthetic` entries in
+`meridian_storage.plugins` and `meridian_storage.schemas`. The plugin facade
+exposes a public-Expression repository for immutable `SyntheticSpec` and
+`RunEvidence` resources; it creates no registry service and never receives an
+Adapter or Engine client.
 
 ## Contracts and support
 

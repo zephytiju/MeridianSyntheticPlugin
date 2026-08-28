@@ -35,13 +35,15 @@ from .generators import (
     builtin_registry,
     default_generator_id,
 )
-from .plugin import SyntheticPluginFactory, SyntheticPluginManifest, plugin_manifest
+from .plugin import Synthetic, SyntheticPluginFactory, plugin_manifest
 from .publication import (
     ArtifactPublication,
     ArtifactPublisher,
     DatasetManifest,
     InMemoryArtifactPublisher,
 )
+from .repository import SyntheticRepository, SyntheticResources
+from .schema import SyntheticSchemaProvider
 from .sinks import (
     CanonicalDatasetSink,
     DirectWritePolicy,
@@ -120,11 +122,14 @@ __all__ = [
     "SourceSpec",
     "SourceTransformation",
     "SourceTransformationRegistry",
+    "Synthetic",
     "SyntheticError",
     "SyntheticErrorCode",
     "SyntheticPluginFactory",
-    "SyntheticPluginManifest",
+    "SyntheticRepository",
+    "SyntheticResources",
     "SyntheticRun",
+    "SyntheticSchemaProvider",
     "SyntheticSpec",
     "SyntheticSpecV1",
     "TargetClass",

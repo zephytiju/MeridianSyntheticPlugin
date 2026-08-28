@@ -29,6 +29,16 @@ EXPECTED_RUNTIME = {
     "meridian-storage-streaming==1.0.0",
 }
 ALLOWED_CATALOGS = {"structured", "evidence", "streaming"}
+EXPECTED_DISTRIBUTION = "meridian-storage-plugin-synthetic"
+EXPECTED_VERSION = "1.0.1"
+EXPECTED_ENTRY_POINTS = {
+    "meridian_storage.plugins": {
+        "synthetic": "meridian_storage.plugins.synthetic.plugin:SyntheticPluginFactory"
+    },
+    "meridian_storage.schemas": {
+        "synthetic": "meridian_storage.plugins.synthetic.schema:SyntheticSchemaProvider"
+    },
+}
 
 
 def imported_roots(path: Path) -> set[str]:
@@ -49,6 +59,10 @@ def main() -> int:
         if forbidden:
             failures.append(f"{path.relative_to(ROOT)} imports {sorted(forbidden)!r}")
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
+    if project["name"] != EXPECTED_DISTRIBUTION or project["version"] != EXPECTED_VERSION:
+        failures.append("project distribution identity differs from the canonical release")
+    if project.get("entry-points") != EXPECTED_ENTRY_POINTS:
+        failures.append("project entry points differ from the canonical plugin contract")
     dependencies = set(project["dependencies"])
     if dependencies != EXPECTED_RUNTIME:
         failures.append(
@@ -56,6 +70,11 @@ def main() -> int:
             f"actual={sorted(dependencies)!r}"
         )
     compatibility = json.loads((ROOT / "compatibility.json").read_text())
+    if (
+        compatibility["package"] != EXPECTED_DISTRIBUTION
+        or compatibility["version"] != EXPECTED_VERSION
+    ):
+        failures.append("compatibility identity differs from project metadata")
     if compatibility["catalogsOwned"]:
         failures.append("synthetic plugin must not own a Catalog")
     if set(compatibility["catalogsUsed"]) != ALLOWED_CATALOGS:

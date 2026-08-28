@@ -2,8 +2,8 @@
 
 # Architecture and authority boundaries
 
-The package implements Synthetic Data Generation LLD revision 15 against the
-locked Meridian HLD revision 56, Catalog/Public Interfaces revision 70, Engine
+The package implements Synthetic Data Generation LLD revision 34 against the
+corrected Meridian HLD revision 109, Catalog/Public Interfaces revision 70, Engine
 Adapters revision 24, Kafka Streaming LLD revision 6, and MeridianConstructs
 revision 45.
 
@@ -37,7 +37,10 @@ remain in the caller-provided Meridian `OperationContext`. Provisioning,
 selection, identity/ACL, migrations, recovery, scaling, and lifecycle remain
 the authority of Platform/Vangu IaC through MeridianConstructs.
 
-The task's explicit repository and distribution names,
-`zephytiju/meridian-plugin-synthetic` and `meridian-plugin-synthetic`, supersede
-the older placeholder names in the package LLD. This does not change a public
-runtime interface or architectural authority.
+The repository publishes exactly one distribution,
+`meridian-storage-plugin-synthetic`, and contributes only the non-overlapping
+`meridian_storage.plugins.synthetic` namespace. Core discovers its `synthetic`
+PluginFactory and SchemaProvider entry points. The provider declares logical
+`structured:synthetic.specs` and `structured:synthetic.run-evidence` Resources;
+the in-process repository uses only public `structured.get` and `structured.put`
+Expressions for immutable registration and exact lookup.

@@ -71,7 +71,7 @@ from .sources import (
     materialize_sources,
 )
 
-IMPLEMENTATION_COORDINATE = "meridian-plugin-synthetic@1.0.0"
+IMPLEMENTATION_COORDINATE = "meridian-storage-plugin-synthetic@1.0.1"
 
 
 class RunState(StrEnum):

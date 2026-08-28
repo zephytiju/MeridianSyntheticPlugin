@@ -48,7 +48,7 @@ def main() -> None:
         ),
         "creationInfo": {
             "created": "2026-08-26T00:00:00Z",
-            "creators": ["Tool: meridian-plugin-synthetic/scripts/build_sbom.py"],
+            "creators": ["Tool: meridian-storage-plugin-synthetic/scripts/build_sbom.py"],
         },
         "packages": [
             {

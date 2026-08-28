@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field, replace
 from types import MappingProxyType
@@ -109,6 +109,39 @@ class RunEvidence:
         if self.error_code is not None:
             result["errorCode"] = self.error_code
         return result
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, object]) -> RunEvidence:
+        def string_mapping(name: str) -> Mapping[str, str]:
+            selected = value.get(name, {})
+            if not isinstance(selected, Mapping) or any(
+                not isinstance(key, str) or not isinstance(item, str)
+                for key, item in selected.items()
+            ):
+                raise ValueError(f"{name} must be a string mapping")
+            return cast(Mapping[str, str], selected)
+
+        queries = value.get("queryFingerprints", ())
+        if not isinstance(queries, Sequence) or isinstance(queries, str | bytes | bytearray):
+            raise ValueError("queryFingerprints must be an array")
+        sources = value.get("sources", ())
+        if not isinstance(sources, Sequence) or isinstance(sources, str | bytes | bytearray):
+            raise ValueError("sources must be an array")
+        if any(not isinstance(item, Mapping) for item in sources):
+            raise ValueError("sources must contain objects")
+        return cls(
+            run_id=cast(str, value.get("runId")),
+            state=cast(str, value.get("state")),
+            spec_fingerprint=cast(str, value.get("specFingerprint")),
+            implementation_digest=cast(str, value.get("implementationDigest")),
+            schema_fingerprints=string_mapping("schemaFingerprints"),
+            partition_digests=string_mapping("partitionDigests"),
+            query_fingerprints=tuple(cast(str, item) for item in queries),
+            source_evidence=tuple(cast(Mapping[str, JsonValue], item) for item in sources),
+            validation_digest=cast(str | None, value.get("validationDigest")),
+            artifact_digest=cast(str | None, value.get("artifactDigest")),
+            error_code=cast(str | None, value.get("errorCode")),
+        )
 
 
 @runtime_checkable

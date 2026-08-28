@@ -224,6 +224,6 @@ def test_parser_rejects_non_json_and_wrong_container_shapes() -> None:
     with pytest.raises(InvalidSpec, match="array"):
         SyntheticSpec.load(value)
     with pytest.raises(ValueError, match="fingerprint"):
-        ImplementationPin("meridian-plugin-synthetic@1.0.0", "bad")
+        ImplementationPin("meridian-storage-plugin-synthetic@1.0.1", "bad")
     with pytest.raises(InvalidSpec, match="boolean"):
         ValidationRuleSpec("rule", "count", blocking="yes")  # type: ignore[arg-type]

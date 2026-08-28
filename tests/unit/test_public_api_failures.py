@@ -12,22 +12,22 @@ from meridian_storage.plugins.synthetic import (
     MemorySink,
     PublicationFailure,
     RunState,
-    SyntheticPluginFactory,
+    Synthetic,
     plugin_manifest,
 )
 
 
 def test_public_factory_and_progress_mapping() -> None:
-    factory = SyntheticPluginFactory()
-    generator = factory.create(basic_spec())
+    generator = Generator(basic_spec())
     run = generator.run(MemorySink())
     assert run.progress.to_dict() == {
         "generatedRecords": 9,
         "writtenPartitions": 3,
         "generatedBytes": run.progress.generated_bytes,
     }
-    assert factory(basic_spec()).implementation_digest == generator.implementation_digest
-    assert plugin_manifest()["service"] is False
+    assert plugin_manifest().extensions["service"] == "false"
+    with pytest.raises(TypeError, match="Meridian.execute"):
+        Synthetic(object())  # type: ignore[arg-type]
     with pytest.raises(PublicationFailure, match="dataset output"):
         _ = run.manifest
 
