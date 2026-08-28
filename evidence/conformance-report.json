@@ -1,16 +1,16 @@
 {
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "formatVersion": "meridian.synthetic.conformance-report.v1",
-  "package": "meridian-plugin-synthetic",
-  "version": "1.0.0",
-  "verifiedAt": "2026-08-26T00:00:00Z",
+  "package": "meridian-storage-plugin-synthetic",
+  "version": "1.0.1",
+  "verifiedAt": "2026-08-28T10:29:42Z",
   "lockedDesign": {
-    "hldRevision": 56,
+    "hldRevision": 109,
     "catalogsRevision": 70,
     "adaptersRevision": 24,
     "streamingRevision": 6,
     "constructsRevision": 45,
-    "syntheticLldRevision": 15
+    "syntheticLldRevision": 34
   },
   "releasedDependencies": {
     "meridian-storage-core": "1.0.0",
@@ -21,20 +21,20 @@
   },
   "verification": {
     "python": "3.13.3",
-    "tests": 93,
+    "tests": 101,
     "testStatus": "passed",
-    "branchAwareCoveragePercent": 91.38,
+    "branchAwareCoveragePercent": 90.64,
     "ruff": "0.12.11 passed",
     "mypy": "1.17.1 strict passed",
     "twine": "6.1.0 passed",
     "cleanWheelInstall": "passed",
     "boundaryCheck": "passed",
-    "vulnerabilityAudit": "no known vulnerabilities"
+    "vulnerabilityAudit": "no known vulnerabilities; unreleased local distribution skipped"
   },
   "digests": {
-    "sourcePythonSet": "sha256:8464a00aa49748f37f9cc932fd7a63a3f8925a7e1c399f66a52c698042241da6",
-    "testPythonSet": "sha256:37afe4b46aba408158ed4d1f0cf08164ca8dee9b7d7e6e749ab9479c166421b8",
-    "compatibility": "sha256:85319621d5d99f400e14f4f3295a0edff5bcf68a1e6511ca041f35844d53bf02",
+    "sourcePythonSet": "sha256:4a255ed0ef6fefef78963d00ff638faba991a4ec6b91e1e9f6980d92293f272d",
+    "testPythonSet": "sha256:96e7b243d804254df930596b1f333249bf55898e4dd19f7d1ed8de9cb870316b",
+    "compatibility": "sha256:1b4c012261fc037fd2fdafdd0f42dfd727e4c28ff84e2cb9894c5e00a5144640",
     "datasetManifestContract": "sha256:1613727738b6499f07262c45dc7052ae92aa3d58e255e35650b2773f4db76422",
     "errorContract": "sha256:268dfd2ecfc8acbbb667adb7f6596e0587b1aeb6316c00ba6bcc89d99cd913b3",
     "specContract": "sha256:6712ee241511f3aa7ced2d8ffb7c34529e51ae61bd7930de646f36fb1c0d182f"
@@ -49,6 +49,10 @@
     "kafkaDependency": false,
     "sourceValuesInEvidence": false,
     "productionWriteApprovalRequired": true,
-    "datasetPublicationBoundary": "Configuration & Artifact plugin"
+    "datasetPublicationBoundary": "Configuration & Artifact plugin",
+    "corePluginFactoryContract": true,
+    "schemaProviderContract": true,
+    "deterministicResourcePersistence": true,
+    "exactResourceLookup": true
   }
 }

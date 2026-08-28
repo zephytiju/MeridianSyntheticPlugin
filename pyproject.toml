@@ -5,8 +5,8 @@ requires = ["hatchling==1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "meridian-plugin-synthetic"
-version = "1.0.0"
+name = "meridian-storage-plugin-synthetic"
+version = "1.0.1"
 description = "Deterministic, schema-driven synthetic data generation for Meridian V1"
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
@@ -54,6 +54,9 @@ Repository = "https://github.com/zephytiju/MeridianSyntheticPlugin"
 
 [project.entry-points."meridian_storage.plugins"]
 synthetic = "meridian_storage.plugins.synthetic.plugin:SyntheticPluginFactory"
+
+[project.entry-points."meridian_storage.schemas"]
+synthetic = "meridian_storage.plugins.synthetic.schema:SyntheticSchemaProvider"
 
 [tool.hatch.build]
 include = [

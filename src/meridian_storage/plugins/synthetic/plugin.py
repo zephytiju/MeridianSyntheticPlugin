@@ -1,63 +1,75 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Small entry-point factory for embedding the synthetic generator."""
+"""Meridian V1 plugin factory and in-process Synthetic composition facade."""
 
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
-from typing import cast
+
+from meridian_storage import Meridian
+from meridian_storage.spi import PluginManifest
 
 from ._version import __version__
-from .canonical import JsonValue
-from .execution import IMPLEMENTATION_COORDINATE, Generator
+from .execution import Generator
 from .generators import GeneratorRegistry
+from .repository import SyntheticRepository, SyntheticResources
 from .spec import SyntheticSpec
 
 
-@dataclass(frozen=True, slots=True)
-class SyntheticPluginManifest:
-    package: str = "meridian-plugin-synthetic"
-    version: str = __version__
-    coordinate: str = IMPLEMENTATION_COORDINATE
-    service: bool = False
-    catalogs_owned: tuple[str, ...] = ()
-    catalogs_used: tuple[str, ...] = ("structured", "evidence", "streaming")
+class Synthetic:
+    """In-process facade returned by ``Meridian.plugin("synthetic")``."""
 
-    def to_dict(self) -> dict[str, JsonValue]:
-        return {
-            "package": self.package,
-            "version": self.version,
-            "coordinate": self.coordinate,
-            "service": self.service,
-            "catalogsOwned": list(self.catalogs_owned),
-            "catalogsUsed": list(self.catalogs_used),
-        }
+    def __init__(
+        self,
+        meridian: Meridian,
+        *,
+        resources: SyntheticResources | None = None,
+        registry: GeneratorRegistry | None = None,
+    ) -> None:
+        if not callable(getattr(meridian, "execute", None)):
+            raise TypeError("meridian must implement Meridian.execute(Expression)")
+        self._registry = registry
+        self.repository = SyntheticRepository(meridian, resources)
+
+    def generator(
+        self,
+        spec: SyntheticSpec | bytes | str | Mapping[str, object],
+        *,
+        registry: GeneratorRegistry | None = None,
+    ) -> Generator:
+        return Generator(spec, registry=registry or self._registry)
 
 
 class SyntheticPluginFactory:
-    """Entry point that creates embeddable Generator instances, never a service."""
+    """Core-discoverable factory for the embeddable Synthetic plugin."""
 
-    manifest = SyntheticPluginManifest()
+    @property
+    def plugin_id(self) -> str:
+        return "synthetic"
 
-    def __call__(
-        self,
-        spec: SyntheticSpec | bytes | str | Mapping[str, object],
-        *,
-        registry: GeneratorRegistry | None = None,
-    ) -> Generator:
-        return Generator(spec, registry=registry)
+    def manifest(self) -> PluginManifest:
+        return PluginManifest(
+            plugin_id=self.plugin_id,
+            plugin_version=__version__,
+            plugin_contract_version="1.0.0",
+            core_contract="1.x",
+            extensions={
+                "distribution": "meridian-storage-plugin-synthetic",
+                "catalogs": "structured,evidence,streaming",
+                "service": "false",
+                "registryService": "false",
+                "design.hldRevision": "109",
+                "design.syntheticLldRevision": "34",
+            },
+        )
 
-    def create(
-        self,
-        spec: SyntheticSpec | bytes | str | Mapping[str, object],
-        *,
-        registry: GeneratorRegistry | None = None,
-    ) -> Generator:
-        return self(spec, registry=registry)
+    def create(self, meridian: Meridian) -> Synthetic:
+        return Synthetic(meridian)
 
 
-def plugin_manifest() -> Mapping[str, JsonValue]:
-    return cast(Mapping[str, JsonValue], SyntheticPluginFactory.manifest.to_dict())
+def plugin_manifest() -> PluginManifest:
+    """Return the exact manifest Core validates during discovery."""
+
+    return SyntheticPluginFactory().manifest()
 
 
-__all__ = ["SyntheticPluginFactory", "SyntheticPluginManifest", "plugin_manifest"]
+__all__ = ["Synthetic", "SyntheticPluginFactory", "plugin_manifest"]
