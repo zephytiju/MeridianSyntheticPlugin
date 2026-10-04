@@ -68,3 +68,21 @@ Serialized schemas are in [`contracts`](contracts), design alignment is in
 [`docs/architecture.md`](docs/architecture.md), and the compatibility pin is in
 [`compatibility.json`](compatibility.json). Python 3.12 through 3.14 is
 supported. Report vulnerabilities using [`SECURITY.md`](SECURITY.md).
+
+## Build and release (Jumbo)
+
+This repository is jumbo-managed (Jumbo Build & Versioning Standard,
+section 3.5): resolution, builds, and releases run through jumbo, never
+ad-hoc pip/uv installs.
+
+```sh
+jumbo lock   # resolve internal packages from the JumboIndex, third-party from PyPI
+jumbo build  # build + tests at the resolved closure
+```
+
+The internal dependencies (`meridian-storage-core`, `meridian-storage-evidence`, `meridian-storage-query`, `meridian-storage-semantics`, `meridian-storage-streaming`) are resolved from the JumboIndex;
+the lock records the exact promoted build of each. Consumers likewise
+resolve this package (`meridian-storage-plugin-synthetic`) from the JumboIndex. Releases are dispatch-only through `.github/workflows/jumbo-publish.yml`;
+as a public package, external publication is driven by the jumbo-computed
+version, and every artifact's SHA-256 is recorded in the append-only
+JumboIndex.
